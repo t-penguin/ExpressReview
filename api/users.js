@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { Task, User } = require("../database");
+const { User } = require("../database");
 
 // GET all users
 router.get("/", async (req, res) => {
@@ -26,14 +26,16 @@ router.get("/:id", async (req, res) => {
 });
 
 // GET all tasks for a user by id
-router.get("/:id/tasks", async (req, res) => {
+router.get("/:id/tasks/owned", async (req, res) => {
   try {
-    const user = await User.findByPk(req.params.id);
-    if (!user) {
-      return res.status(404).send({ error: "User not found" });
-    }
-    const tasks = await user.getTasks();
-    res.send(tasks);
+    const userId = Number(req.params.id);
+    const user = await User.findAll({
+      where: { id: userId },
+      include: "ownedTasks",
+    });
+
+    const ownedTasks = user[0].dataValues.ownedTasks;
+    res.status(200).send(ownedTasks);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch user's tasks" });
   }
@@ -45,12 +47,9 @@ router.get("/:id/tasks/assigned", async (req, res) => {
     const userId = Number(req.params.id);
     const user = await User.findAll({
       where: { id: userId},
-      include: {
-        model: Task,
-        through: { attributes: [] }
-      }
+      include: "assignedTasks",
     });
-    const assignedTasks = user[0].dataValues.tasks;
+    const assignedTasks = user[0].dataValues.assignedTasks;
     res.status(200).send(assignedTasks);
   } catch (error) {
     res.status(500).send(error);
