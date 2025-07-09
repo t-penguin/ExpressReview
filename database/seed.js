@@ -34,10 +34,10 @@ const seed = async () => {
   await tasks[1].setUser(users[1]);
   await tasks[2].setUser(users[2]);
 
-  await tasks[0].addUser(users[1]);
-  await tasks[0].addUser(users[2]);
-  await tasks[1].addUser(users[0]);
-  await tasks[2].addUser(users[0]);
+  await tasks[0].addAssignee(users[1]);
+  await tasks[0].addAssignee(users[2]);
+  await tasks[1].addAssignee(users[0]);
+  await tasks[2].addAssignee(users[0]);
 
   console.log(`📝 Created ${tasks.length} tasks`);
 
