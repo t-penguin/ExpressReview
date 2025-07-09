@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { Task, User } = require("../database");
+const { Task } = require("../database");
 
 // TASK 4: Add the necessary routes here
 // This time, use your newly created Sequelize models instead of the dummy database
@@ -25,6 +25,21 @@ router.get("/:id", async (req, res) => {
     res.send(task);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch task" });
+  }
+});
+
+// GET all users assigned to a task by id
+router.get("/:id/assigned-users", async (req, res) => {
+  try {
+    const taskId = Number(req.params.id);
+    const task = await Task.findAll({
+      where: { id: taskId },
+      include: "assignees",
+    });
+    const assignees = task[0].dataValues.assignees;
+    res.status(200).send(assignees);
+  } catch (error) {
+    res.status(500).send(error);
   }
 });
 
