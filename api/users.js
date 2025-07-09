@@ -39,6 +39,24 @@ router.get("/:id/tasks", async (req, res) => {
   }
 });
 
+// GET all tasks assigned to a user by id
+router.get("/:id/tasks/assigned", async (req, res) => {
+  try {
+    const userId = Number(req.params.id);
+    const user = await User.findAll({
+      where: { id: userId},
+      include: {
+        model: Task,
+        through: { attributes: [] }
+      }
+    });
+    const assignedTasks = user[0].dataValues.tasks;
+    res.status(200).send(assignedTasks);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
 // POST a new user
 router.post("/", async (req, res) => {
   try {
