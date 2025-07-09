@@ -34,7 +34,13 @@ const seed = async () => {
   await tasks[1].setUser(users[1]);
   await tasks[2].setUser(users[2]);
 
+  await tasks[0].addUser(users[1]);
+  await tasks[0].addUser(users[2]);
+  await tasks[1].addUser(users[0]);
+
   console.log(`📝 Created ${tasks.length} tasks`);
+
+  console.log(`☑️ Created 3 task assignments`);
 
   console.log("🌱 Seeded the database");
   db.close();
