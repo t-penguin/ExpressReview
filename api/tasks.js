@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { Task } = require("../database");
+const { User, Task } = require("../database");
 
 // TASK 4: Add the necessary routes here
 // This time, use your newly created Sequelize models instead of the dummy database
@@ -54,6 +54,31 @@ router.patch("/:id", async (req, res) => {
     res.send(updatedTask);
   } catch (error) {
     res.status(500).json({ error: "Failed to update task" });
+  }
+});
+
+// Assign a user to a task
+router.patch("/:taskId/add/:userId", async (req, res) => {
+  try {
+    const taskId = Number(req.params.taskId);
+    const userId = Number(req.params.userId);
+    const user = await User.findByPk(userId);
+    if (!user) {
+      res.status(404).send("User not found");
+      return;
+    }
+
+    const task = await Task.findByPk(taskId);
+    if (!task) {
+      res.status(404).send("Task not found");
+      return;
+    }
+
+    task.addAssignee(user);
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
   }
 });
 
